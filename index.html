@@ -435,7 +435,8 @@ const GSCOPE='https://www.googleapis.com/auth/calendar.events',APPURL=location.h
 let gTok=null,gExp=0,gClient=null,gPend=null,pre_=null;
 try{const t=JSON.parse(sessionStorage.getItem('gtok')||'null');if(t&&t.exp>Date.now()){gTok=t.tok;gExp=t.exp}}catch(e){}
 const cfg=()=>items.get('config')||{};
-const gid=()=>(cfg().gcid||'').trim();
+const GCID_APP='340388734567-isgh3c95andph0i90ugcejnaa4h5g8ps.apps.googleusercontent.com';
+const gid=()=>(cfg().gcid??GCID_APP).trim();
 const masDias=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const recTexto=x=>x.kind==='cli'?'Llamar a '+x.cliente+' por la cotización'+(x.valor?' de '+mshort(x.valor):''):(antPend(x)?'Cobrar anticipo de '+x.nombre:'Revisar contrato: '+x.nombre);
 const recDesc=x=>x.kind==='cli'?[x.que,x.valor?'Valor cotizado: '+money(x.valor):'',x.ant?'Anticipo '+x.ant+'%: '+money(antV(x)):'',x.tel?'Teléfono: '+x.tel:'','Enviada el '+fcorta(x.enviada)].filter(Boolean).join('\n'):[x.objeto,x.cliente,'Valor: '+money(x.valor),x.ant?'Anticipo '+x.ant+'%: '+money(antV(x))+(x.antRec?' (recibido)':' (pendiente)'):''].filter(Boolean).join('\n');
