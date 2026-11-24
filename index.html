@@ -63,6 +63,7 @@ button.tarjeta{cursor:pointer}button.tarjeta:active{transform:scale(.98)}
 .t-txt{font-size:13px;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .monto{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}.monto.pos{color:var(--green-tx)}
 .datos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;padding:10px;background:var(--navy-soft);border-radius:12px}
+.datos.d2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .datos span{display:block;font-size:11px;color:var(--muted)}.datos b{font-size:14px;color:var(--navy-tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .prog{height:8px;background:var(--navy-soft);border-radius:6px;overflow:hidden;margin-top:10px}
 .prog>div{height:100%;background:var(--green);border-radius:6px;transition:width .6s var(--ease)}
@@ -163,6 +164,9 @@ const digits=v=>+(String(v||'').replace(/\D/g,''))||0;
 const opts=(arr,sel)=>arr.map(o=>`<option${o===sel?' selected':''}>${esc(o)}</option>`).join('');
 const all=k=>[...items.values()].filter(o=>o.kind===k);
 const ut=p=>p.valor*(p.util||0)/100;
+const antV=x=>Math.round((x.valor||0)*(x.ant||0)/100);
+const antPend=p=>(p.estado==='Adjudicado'||p.estado==='En ejecución')&&p.ant>0&&!p.antRec;
+const ultAnt=()=>{const l=[...all('cli'),...all('proy')].filter(x=>x.ant>0).sort((a,b)=>(b.creado||'').localeCompare(a.creado||''));return l.length?l[0].ant:''};
 const dias=(a,b)=>a?Math.max(0,Math.round((new Date((b||today())+'T12:00')-new Date(a+'T12:00'))/864e5)):0;
 const fcorta=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y};
 
@@ -187,12 +191,14 @@ function movCard(m){const ing=m.tipo==='Ingreso',pr=(items.get(m.proyecto)||{}).
   return `<button class="tarjeta fila" data-act="editM" data-id="${esc(m.id)}"><div><div class="t-nom">${esc(m.descripcion||m.categoria)}</div><div class="t-sub">${esc([m.descripcion?m.categoria:'',m.metodo,pr].filter(Boolean).join(' · '))}</div></div><div class="monto${ing?' pos':''}">${ing?'+':'−'}${esc(money(m.monto))}</div></button>`}
 function proyCard(p){const d=p.inicio?new Date(p.inicio+'T12:00'):null,est=p.estado;
   const cls=est==='Perdido'?' lost':(est==='Adjudicado'||est==='En ejecución'||est==='Terminado')?' win':'';
-  return `<button class="tarjeta" data-act="editP" data-id="${esc(p.id)}"${ACTIVOS.includes(est)?'':' style="opacity:.65"'}>
+  return `<div class="tarjeta"${ACTIVOS.includes(est)?'':' style="opacity:.65"'}><button class="cli-main" data-act="editP" data-id="${esc(p.id)}">
   <div class="t-emp">${esc(p.empresa)}</div><div class="t-nom">${esc(p.nombre)}</div>
   ${p.objeto?`<div class="t-txt">${esc(p.objeto)}</div>`:''}${p.cliente?`<div class="t-sub">${esc(p.cliente)}</div>`:''}
   <div class="datos"><div><span>Valor</span><b>${esc(mshort(p.valor))}</b></div><div><span>Ejecución</span><b>${p.meses?esc(p.meses)+' meses':'—'}</b></div><div><span>Utilidad${p.util?' '+esc(p.util)+'%':''}</span><b>${esc(mshort(ut(p)))}</b></div></div>
+  ${p.ant?`<div class="t-sub" style="margin-top:8px">Anticipo ${esc(p.ant)}%: <b style="color:var(--navy-tx)">${esc(mshort(antV(p)))}</b> · ${p.antRec?'recibido el '+esc(fcorta(p.antRec)):'pendiente'}</div>`:''}
   <div class="prog"><div style="width:${Math.max(0,Math.min(100,+p.prob||0))}%"></div></div>
-  <div class="t-pie"><span class="chip${cls}">${esc(est)}</span><span>${esc(p.prob||0)}% probable</span><span>${d?'Inicia '+esc(d.toLocaleDateString('es-CO',{month:'short',year:'numeric'})):'Sin fecha de inicio'}</span></div></button>`}
+  <div class="t-pie"><span class="chip${cls}">${esc(est)}</span><span>${esc(p.prob||0)}% probable</span><span>${d?'Inicia '+esc(d.toLocaleDateString('es-CO',{month:'short',year:'numeric'})):'Sin fecha de inicio'}</span></div></button>
+  ${antPend(p)?`<div class="acc"><span class="nota">Anticipo por cobrar: <b>${esc(money(antV(p)))}</b></span><span style="flex:1"></span><button class="mini verde" data-act="antP" data-id="${esc(p.id)}">Recibí el anticipo</button></div>`:''}</div>`}
 function cliCard(c){
   const abierta=ABIERTA.includes(c.estado),n=dias(c.enviada,abierta?null:c.cerrada),tone=!abierta?'fin':n>21?'mal':n>7?'ojo':'';
   const tel=String(c.tel||'').replace(/\D/g,''),wa=tel?(tel.length===10?'57'+tel:tel):'';
@@ -200,7 +206,7 @@ function cliCard(c){
   return `<div class="tarjeta"><button class="cli-main" data-act="editC" data-id="${esc(c.id)}"><div class="fila" style="align-items:flex-start">
   <div><div class="t-emp">${esc(c.empresa)}</div><div class="t-nom">${esc(c.cliente)}</div>${c.que?`<div class="t-txt">${esc(c.que)}</div>`:''}</div>
   <div class="dias ${tone}"><b>${n}</b><span>${n===1?'día':'días'}${abierta?' pensando':''}</span></div></div>
-  <div class="datos"><div><span>Cotizado</span><b>${c.valor?esc(mshort(c.valor)):'—'}</b></div><div><span>Enviada</span><b>${esc(fcorta(c.enviada))||'—'}</b></div><div><span>Último contacto</span><b>${c.ultimo?(dias(c.ultimo)===0?'Hoy':'Hace '+dias(c.ultimo)+' d'):'—'}</b></div></div></button>
+  <div class="datos d2"><div><span>Cotizado</span><b>${c.valor?esc(mshort(c.valor)):'—'}</b></div><div><span>Anticipo${c.ant?' '+esc(c.ant)+'%':''}</span><b>${c.ant?esc(mshort(antV(c))):'—'}</b></div><div><span>Enviada</span><b>${esc(fcorta(c.enviada))||'—'}</b></div><div><span>Último contacto</span><b>${c.ultimo?(dias(c.ultimo)===0?'Hoy':'Hace '+dias(c.ultimo)+' d'):'—'}</b></div></div></button>
   <div class="acc"><span class="chip${chip}">${esc(c.estado)}</span><span style="flex:1"></span>
   ${abierta?`<button class="mini" data-act="segC" data-id="${esc(c.id)}">Hice seguimiento</button>`:''}
   ${wa?`<a class="mini" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:''}
@@ -232,6 +238,7 @@ function vInicio(){
   const ult=all('mov').sort((a,b)=>(b.fecha+b.creado).localeCompare(a.fecha+a.creado)).slice(0,4);
   const prox=act.sort((a,b)=>(a.inicio||'9').localeCompare(b.inicio||'9')).slice(0,2);
   return ring+`<div class="kpis">${kpi('Hoy',money(hoy),'en gastos')}${kpi('Balance del mes',money(bal),'ingresos menos gastos',bal<0?'neg':'')}${kpi('Ingresos del mes',money(inn),movs.filter(m=>m.tipo==='Ingreso').length+' registrados','pos')}${kpi('Utilidades esperadas',mshort(uts),act.length+(act.length===1?' contrato activo':' contratos activos'))}</div>
+  ${(()=>{const pe=all('proy').filter(antPend);if(!pe.length)return'';const t=pe.reduce((s,p)=>s+antV(p),0);return `<button class="tarjeta fila" data-act="go" data-v="contratos"><div><div class="t-nom">Anticipos por cobrar: ${esc(mshort(t))}</div><div class="t-sub">${pe.length} ${pe.length===1?'contrato adjudicado':'contratos adjudicados'} sin anticipo recibido</div></div>${ico('plata')}</button>`})()}
   ${(()=>{const ab=all('cli').filter(c=>ABIERTA.includes(c.estado));if(!ab.length)return'';const mx=Math.max(...ab.map(c=>dias(c.enviada)));return `<button class="tarjeta fila" data-act="go" data-v="clientes"><div><div class="t-nom">${ab.length} ${ab.length===1?'cliente pensando':'clientes pensando'} una cotización</div><div class="t-sub">La más antigua lleva ${mx} ${mx===1?'día':'días'}</div></div>${ico('reloj')}</button>`})()}
   <div class="mosaico"><button class="tile" data-act="addG">${ico('menos')}Anotar gasto</button><button class="tile verde" data-act="addI">${ico('sumar')}Anotar ingreso</button>
   ${tilesIA()}<button class="tile claro" data-act="addP">${ico('obra')}Nuevo contrato</button><button class="tile claro" data-act="go" data-v="gastos">${ico('avance')}¿En qué se va la plata?</button></div>
@@ -257,7 +264,7 @@ function vContratos(){
   header('Contratos y proyectos',ps.length?act.length+(act.length===1?' activo':' activos')+' de '+ps.length:'Lo que viene',false);
   const l=ps.filter(p=>!fEst||p.estado===fEst).sort((a,b)=>(ACTIVOS.includes(b.estado)-ACTIVOS.includes(a.estado))||(a.inicio||'9').localeCompare(b.inicio||'9'));
   return `<div class="kpis">${kpi('Valor de contratos activos',mshort(act.reduce((s,p)=>s+p.valor,0)))}${kpi('Utilidades esperadas',mshort(act.reduce((s,p)=>s+ut(p),0)),'','pos')}
-  ${kpi('Adjudicado y en ejecución',mshort(ps.filter(p=>p.estado==='Adjudicado'||p.estado==='En ejecución').reduce((s,p)=>s+p.valor,0)))}${kpi('Utilidad según probabilidad',mshort(act.reduce((s,p)=>s+ut(p)*(p.prob||0)/100,0)))}</div>
+  ${kpi('Adjudicado y en ejecución',mshort(ps.filter(p=>p.estado==='Adjudicado'||p.estado==='En ejecución').reduce((s,p)=>s+p.valor,0)))}${kpi('Utilidad según probabilidad',mshort(act.reduce((s,p)=>s+ut(p)*(p.prob||0)/100,0)))}${kpi('Anticipos por cobrar',mshort(ps.filter(antPend).reduce((s,p)=>s+antV(p),0)),ps.filter(antPend).length+' por cobrar',ps.some(antPend)?'neg':'')}${kpi('Anticipos recibidos',mshort(ps.filter(p=>p.antRec).reduce((s,p)=>s+antV(p),0)),ps.filter(p=>p.antRec).length+' recibidos','pos')}</div>
   <div class="mosaico"><button class="tile ancho" data-act="addP">${ico('sumar')}Nuevo contrato o proyecto</button></div>
   <select id="fEst" aria-label="Filtrar por estado"><option value="">Todos los estados</option>${opts(ESTADOS.map(e=>e[0]),fEst)}</select>
   <div class="lista">${l.length?l.map(proyCard).join(''):vacio(ps.length?'No hay contratos en ese estado.':'Aquí van las licitaciones, formulaciones y diseños que vienen. Toca “Nuevo contrato o proyecto”.')}</div>`}
@@ -297,6 +304,9 @@ function proyForm(p){
   <label class="campo">Inicio estimado<input type="date" name="inicio" value="${esc(p?.inicio||'')}"></label></div>
   <div class="fila2"><label class="campo">Utilidad (%)<input name="util" id="fUtil" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(p?.util??'')}"></label>
   <label class="campo">Utilidad en pesos<input id="fUtilV" readonly tabindex="-1" value="${p?esc(money(ut(p))):''}"></label></div>
+  <div class="fila2"><label class="campo">Anticipo (%)<input name="ant" id="fAnt" type="number" inputmode="decimal" min="0" max="100" step="5" value="${esc(p?.ant??ultAnt())}"></label>
+  <label class="campo">Anticipo en pesos<input id="fAntV" readonly tabindex="-1" value="${p&&p.ant?esc(money(antV(p))):''}"></label></div>
+  <label class="campo">Fecha en que recibiste el anticipo<input type="date" name="antRec" value="${esc(p?.antRec||'')}"><span class="nota" style="font-weight:400">Déjala vacía mientras no te lo paguen.</span></label>
   <label class="campo">Entidad o cliente<input name="cliente" maxlength="100" value="${esc(p?.cliente||'')}"></label>
   <div class="fila2"><label class="campo">Empresa<select name="empresa">${opts(EMPRESAS,p?.empresa)}</select></label><label class="campo">Tipo<select name="tipoP">${opts(TIPOS_P,p?.tipoP)}</select></label></div>
   <div class="fila2"><label class="campo">Estado<select name="estado" id="fEstado">${opts(ESTADOS.map(e=>e[0]),p?.estado)}</select></label>
@@ -307,6 +317,8 @@ function cliForm(c){
   <label class="campo">Teléfono o WhatsApp<input name="tel" type="tel" inputmode="tel" maxlength="20" value="${esc(c?.tel||'')}"></label>
   <label class="campo">¿Qué se le cotizó?<textarea name="que" rows="3" maxlength="1500">${esc(c?.que||'')}</textarea></label>
   <label class="campo">Valor cotizado<input name="valor" id="fMonto" class="grande" inputmode="numeric" autocomplete="off" placeholder="$ 0" value="${c&&c.valor?esc(c.valor.toLocaleString('es-CO')):''}"></label>
+  <div class="fila2"><label class="campo">Anticipo que pediste (%)<input name="ant" id="fAnt" type="number" inputmode="decimal" min="0" max="100" step="5" value="${esc(c?.ant??ultAnt())}"></label>
+  <label class="campo">Anticipo en pesos<input id="fAntV" readonly tabindex="-1" value="${c&&c.ant?esc(money(antV(c))):''}"></label></div>
   <div class="fila2"><label class="campo">Fecha en que se envió<input type="date" name="enviada" value="${esc(c?.enviada||today())}"></label>
   <label class="campo">Empresa<select name="empresa">${opts(EMPRESAS,c?.empresa)}</select></label></div>
   <div class="fila2"><label class="campo">Estado<select name="estado">${opts(EST_C,c?.estado)}</select></label>
@@ -333,6 +345,7 @@ function closeForm(){$('#pane').hidden=true;editing=null;pendingFoto=null;stopMi
 
 $('#frm').addEventListener('input',e=>{const t=e.target;
   if(t.id==='fMonto'){const n=digits(t.value);t.value=n?n.toLocaleString('es-CO'):''}
+  if((t.id==='fMonto'||t.id==='fAnt')&&$('#fAntV'))$('#fAntV').value=money(digits($('#fMonto').value)*(+$('#fAnt').value||0)/100);
   if((t.id==='fMonto'||t.id==='fUtil')&&$('#fUtilV'))$('#fUtilV').value=money(digits($('#fMonto').value)*(+$('#fUtil').value||0)/100);
   if(t.name==='tipo'){$('#fCat').innerHTML=opts(t.value==='Ingreso'?CAT_I:CAT_G)}
   if(t.id==='fEstado'){const x=ESTADOS.find(z=>z[0]===t.value);if(x)$('#fProb').value=x[1]}});
@@ -359,10 +372,10 @@ $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
     if(pendingFoto){rec.foto=true;const pf=pendingFoto;fotoPut(rec.id,pf).catch(()=>toast('No se pudo guardar la foto'))}
     const d=new Date(fd.fecha+'T12:00');cur=new Date(d.getFullYear(),d.getMonth(),1);
   }else if(kind==='proy'){const valor=digits(fd.valor);if(!fd.nombre.trim())return bad('Escribe el nombre.');if(!valor)return bad('Escribe el valor del contrato.');
-    rec={id:o?.id||newId('p'),kind:'proy',nombre:fd.nombre.trim(),objeto:fd.objeto.trim(),cliente:fd.cliente.trim(),empresa:fd.empresa,tipoP:fd.tipoP,valor,estado:fd.estado,prob:Math.max(0,Math.min(100,+fd.prob||0)),util:Math.max(0,Math.min(100,+fd.util||0)),inicio:fd.inicio||'',meses:+fd.meses||0,notas:fd.notas.trim(),creado:o?.creado||new Date().toISOString()};
+    rec={id:o?.id||newId('p'),kind:'proy',nombre:fd.nombre.trim(),objeto:fd.objeto.trim(),cliente:fd.cliente.trim(),empresa:fd.empresa,tipoP:fd.tipoP,valor,estado:fd.estado,prob:Math.max(0,Math.min(100,+fd.prob||0)),util:Math.max(0,Math.min(100,+fd.util||0)),ant:Math.max(0,Math.min(100,+fd.ant||0)),antRec:fd.antRec||'',inicio:fd.inicio||'',meses:+fd.meses||0,notas:fd.notas.trim(),creado:o?.creado||new Date().toISOString()};
   }else if(kind==='cli'){if(!fd.cliente.trim())return bad('Escribe el nombre del cliente.');if(!fd.enviada)return bad('Pon la fecha en que se envió.');
     const cerr=!ABIERTA.includes(fd.estado);
-    rec={id:o?.id||newId('c'),kind:'cli',cliente:fd.cliente.trim(),tel:fd.tel.trim(),que:fd.que.trim(),valor:digits(fd.valor),enviada:fd.enviada,empresa:fd.empresa,estado:fd.estado,ultimo:fd.ultimo||'',notas:fd.notas.trim(),cerrada:cerr?(o?.cerrada||today()):'',creado:o?.creado||new Date().toISOString()};
+    rec={id:o?.id||newId('c'),kind:'cli',cliente:fd.cliente.trim(),tel:fd.tel.trim(),que:fd.que.trim(),valor:digits(fd.valor),ant:Math.max(0,Math.min(100,+fd.ant||0)),enviada:fd.enviada,empresa:fd.empresa,estado:fd.estado,ultimo:fd.ultimo||'',notas:fd.notas.trim(),cerrada:cerr?(o?.cerrada||today()):'',creado:o?.creado||new Date().toISOString()};
   }else rec={id:'config',kind:'config',presupuesto:digits(fd.presupuesto)};
   closeForm();put(rec);toast('Guardado')});
 $('#pBack').addEventListener('click',closeForm);
@@ -376,14 +389,15 @@ $('#main').addEventListener('click',e=>{const b=e.target.closest('[data-act]');i
   if(a==='addG')openForm('mov',null,'Gasto');if(a==='addI')openForm('mov',null,'Ingreso');if(a==='addP')openForm('proy');if(a==='budget')openForm('budget');
   if(a==='dictar'){openForm('dictar')}
   if(a==='addC')openForm('cli');if(a==='editC')openForm('cli',items.get(b.dataset.id));
+  if(a==='antP'){const p=items.get(b.dataset.id);if(p){put({...p,antRec:today()});toast('Anticipo recibido hoy',()=>put(p))}}
   if(a==='segC'){const c=items.get(b.dataset.id);if(c){put({...c,ultimo:today()});toast('Seguimiento anotado: hoy')}}
   if(a==='winC'){const c=items.get(b.dataset.id);if(c){put({...c,estado:'Aceptó',cerrada:today()});
-    openForm('proy',null,null,{nombre:(c.que||c.cliente).slice(0,140),objeto:c.que,cliente:c.cliente,empresa:c.empresa,valor:c.valor||0,estado:'Adjudicado',prob:90,notas:c.notas});
+    openForm('proy',null,null,{nombre:(c.que||c.cliente).slice(0,140),objeto:c.que,cliente:c.cliente,empresa:c.empresa,valor:c.valor||0,ant:c.ant||'',estado:'Adjudicado',prob:90,notas:c.notas});
     toast('¡Bien! Completa los datos del contrato')}}
-  if(a==='csvC')copyCsv([['Cliente','Teléfono','Qué se cotizó','Valor cotizado','Empresa','Enviada','Estado','Días pensando','Último contacto','Notas'],...all('cli').map(c=>[c.cliente,c.tel,c.que,c.valor,c.empresa,c.enviada,c.estado,dias(c.enviada,ABIERTA.includes(c.estado)?null:c.cerrada),c.ultimo,c.notas])],'Posibles clientes');
+  if(a==='csvC')copyCsv([['Cliente','Teléfono','Qué se cotizó','Valor cotizado','Anticipo %','Anticipo','Empresa','Enviada','Estado','Días pensando','Último contacto','Notas'],...all('cli').map(c=>[c.cliente,c.tel,c.que,c.valor,c.ant||'',antV(c)||'',c.empresa,c.enviada,c.estado,dias(c.enviada,ABIERTA.includes(c.estado)?null:c.cerrada),c.ultimo,c.notas])],'Posibles clientes');
   if(a==='editM')openForm('mov',items.get(b.dataset.id));if(a==='editP')openForm('proy',items.get(b.dataset.id));if(a==='go')location.hash=b.dataset.v;
   if(a==='csvM'){const pn=id=>(items.get(id)||{}).nombre||'';copyCsv([['Fecha','Tipo','Categoría','Descripción','Medio de pago','Proyecto','Monto'],...all('mov').sort((x,y)=>x.fecha.localeCompare(y.fecha)).map(m=>[m.fecha,m.tipo,m.categoria,m.descripcion,m.metodo,pn(m.proyecto),m.monto])],'Movimientos')}
-  if(a==='csvP')copyCsv([['Nombre','Objeto','Entidad o cliente','Empresa','Tipo','Estado','Probabilidad %','Valor','Tiempo de ejecución (meses)','Utilidad %','Utilidad','Inicio','Notas'],...all('proy').map(p=>[p.nombre,p.objeto,p.cliente,p.empresa,p.tipoP,p.estado,p.prob,p.valor,p.meses,p.util,Math.round(ut(p)),p.inicio,p.notas])],'Contratos')});
+  if(a==='csvP')copyCsv([['Nombre','Objeto','Entidad o cliente','Empresa','Tipo','Estado','Probabilidad %','Valor','Tiempo de ejecución (meses)','Utilidad %','Utilidad','Anticipo %','Anticipo','Anticipo recibido','Inicio','Notas'],...all('proy').map(p=>[p.nombre,p.objeto,p.cliente,p.empresa,p.tipoP,p.estado,p.prob,p.valor,p.meses,p.util,Math.round(ut(p)),p.ant||'',antV(p)||'',p.antRec||'',p.inicio,p.notas])],'Contratos')});
 $('#hAcc').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;cur=new Date(cur.getFullYear(),cur.getMonth()+(b.dataset.act==='mPrev'?-1:1),1);render()});
 $('#main').addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('#movList').innerHTML=listaMovs(mes().movs)}});
 $('#main').addEventListener('change',e=>{if(e.target.classList.contains('fotoIn')){const f=e.target.files[0];e.target.value='';if(f)leerFactura(f);return}if(e.target.id==='fEst'){fEst=e.target.value;render()}if(e.target.id==='fCli'){fCli=e.target.value;render()}});
