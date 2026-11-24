@@ -93,9 +93,16 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--navy-2);outline-off
 .seg label:last-child input:checked+span{background:var(--green-tile);color:var(--green-ink)}
 .error{background:var(--red-soft);color:var(--red);border-radius:12px;padding:10px 12px;font-weight:600;font-size:14px}
 .buscar{position:relative}.buscar .ic{position:absolute;left:13px;top:14px;color:var(--muted)}.buscar input{padding-left:40px}
-.tabs{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:8;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 8px 24px rgb(22 35 59/.16);max-width:740px;margin:0 auto}
-.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 5px;font-size:11px;color:var(--muted);text-decoration:none;border-radius:16px}
+.tabs{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:8;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 8px 24px rgb(22 35 59/.16);max-width:740px;margin:0 auto}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 5px;font-size:11px;line-height:1.15;text-align:center;color:var(--muted);text-decoration:none;border-radius:16px}
 .tabs a .ic{width:22px;height:22px}.tabs a.activa{color:var(--navy-tx);background:var(--navy-soft);font-weight:700}
+.dias{text-align:center;min-width:66px;padding:8px 6px;border-radius:14px;background:var(--green-soft);color:var(--green-tx);flex:none}
+.dias b{display:block;font-size:26px;line-height:1}.dias span{font-size:11px;font-weight:600}
+.dias.ojo{background:var(--amber-soft);color:var(--amber-ink)}.dias.mal{background:var(--red-soft);color:var(--red)}.dias.fin{background:var(--navy-soft);color:var(--navy-tx)}
+.cli-main{display:block;width:100%;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.mini{min-height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--navy-tx);font:inherit;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;cursor:pointer}
+.mini.verde{background:var(--green-tile);color:var(--green-ink);border-color:transparent}
 .capa{position:fixed;inset:0;background:var(--bg);z-index:40;overflow:auto}
 .capa[hidden]{display:none}.capa main{padding-bottom:40px}
 .capa.baul{z-index:30}.capa.baul .barra{background:#16233B}
@@ -127,7 +134,7 @@ obra:"M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01",
 mas:"M4 6h16M4 12h16M4 18h16",sumar:"M12 5v14M5 12h14",menos:"M5 12h14",atras:"M15 6l-6 6 6 6",adel:"M9 6l6 6-6 6",
 avance:"M3 17l6-6 4 4 8-8M14 7h7v7",doc:"M14 3v4a1 1 0 0 0 1 1h4M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zM9 13h6M9 17h6",
 buscar:"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0-14 0M21 21l-6-6",meta:"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0-10 0M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0",
-nota:"M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4M13.5 6.5l4 4",llave:"M15 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0M10.5 13.5L3 21M5 19l2 2M7 17l2 2"};
+cliente:"M8 7a4 4 0 1 0 8 0a4 4 0 1 0-8 0M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2",reloj:"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 7v5l3 3",nota:"M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4M13.5 6.5l4 4",llave:"M15 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0M10.5 13.5L3 21M5 19l2 2M7 17l2 2"};
 const ico=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CAT_G=['Alimentación','Vivienda','Servicios públicos','Transporte','Vehículo','Salud','Educación','Familia','Ropa y personal','Ocio y salidas','Créditos y deudas','Impuestos','Seguros','Otros gastos'];
 const CAT_I=['Honorarios','Utilidades de empresas','Salario','Arriendos','Reembolsos','Otros ingresos'];
@@ -136,8 +143,10 @@ const EMPRESAS=['Flassservic SAS','Ingeinnova Territorial SAS','Construcciones y
 const TIPOS_P=['Contrato público','Contrato privado','Formulación de proyecto','Diseño y planos','Consultoría','Otro'];
 const ESTADOS=[['Prospecto',10],['En formulación',25],['Propuesta enviada',40],['Adjudicado',90],['En ejecución',100],['Terminado',100],['Perdido',0]];
 const ACTIVOS=['Prospecto','En formulación','Propuesta enviada','Adjudicado','En ejecución'];
+const EST_C=['Esperando respuesta','En negociación','Aceptó','No aceptó'];
+const ABIERTA=['Esperando respuesta','En negociación'];
 const LS='gastos-proyectos-v1';
-let items=new Map(),coll=null,editing=null,undoFn=null,tTimer=0,view='inicio',q='',fEst='';
+let items=new Map(),coll=null,editing=null,undoFn=null,tTimer=0,view='inicio',q='',fEst='',fCli='';
 let cur=new Date();cur=new Date(cur.getFullYear(),cur.getMonth(),1);
 const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
@@ -149,6 +158,8 @@ const digits=v=>+(String(v||'').replace(/\D/g,''))||0;
 const opts=(arr,sel)=>arr.map(o=>`<option${o===sel?' selected':''}>${esc(o)}</option>`).join('');
 const all=k=>[...items.values()].filter(o=>o.kind===k);
 const ut=p=>p.valor*(p.util||0)/100;
+const dias=(a,b)=>a?Math.max(0,Math.round((new Date((b||today())+'T12:00')-new Date(a+'T12:00'))/864e5)):0;
+const fcorta=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y};
 
 /* ---------- guardado ---------- */
 function setStatus(s){const el=$('#sync');el.className='sync'+(s==='db'?'':s==='local'?' off':' mal');
@@ -177,6 +188,30 @@ function proyCard(p){const d=p.inicio?new Date(p.inicio+'T12:00'):null,est=p.est
   <div class="datos"><div><span>Valor</span><b>${esc(mshort(p.valor))}</b></div><div><span>Ejecución</span><b>${p.meses?esc(p.meses)+' meses':'—'}</b></div><div><span>Utilidad${p.util?' '+esc(p.util)+'%':''}</span><b>${esc(mshort(ut(p)))}</b></div></div>
   <div class="prog"><div style="width:${Math.max(0,Math.min(100,+p.prob||0))}%"></div></div>
   <div class="t-pie"><span class="chip${cls}">${esc(est)}</span><span>${esc(p.prob||0)}% probable</span><span>${d?'Inicia '+esc(d.toLocaleDateString('es-CO',{month:'short',year:'numeric'})):'Sin fecha de inicio'}</span></div></button>`}
+function cliCard(c){
+  const abierta=ABIERTA.includes(c.estado),n=dias(c.enviada,abierta?null:c.cerrada),tone=!abierta?'fin':n>21?'mal':n>7?'ojo':'';
+  const tel=String(c.tel||'').replace(/\D/g,''),wa=tel?(tel.length===10?'57'+tel:tel):'';
+  const chip=c.estado==='Aceptó'?' win':c.estado==='No aceptó'?' lost':'';
+  return `<div class="tarjeta"><button class="cli-main" data-act="editC" data-id="${esc(c.id)}"><div class="fila" style="align-items:flex-start">
+  <div><div class="t-emp">${esc(c.empresa)}</div><div class="t-nom">${esc(c.cliente)}</div>${c.que?`<div class="t-txt">${esc(c.que)}</div>`:''}</div>
+  <div class="dias ${tone}"><b>${n}</b><span>${n===1?'día':'días'}${abierta?' pensando':''}</span></div></div>
+  <div class="datos"><div><span>Cotizado</span><b>${c.valor?esc(mshort(c.valor)):'—'}</b></div><div><span>Enviada</span><b>${esc(fcorta(c.enviada))||'—'}</b></div><div><span>Último contacto</span><b>${c.ultimo?(dias(c.ultimo)===0?'Hoy':'Hace '+dias(c.ultimo)+' d'):'—'}</b></div></div></button>
+  <div class="acc"><span class="chip${chip}">${esc(c.estado)}</span><span style="flex:1"></span>
+  ${abierta?`<button class="mini" data-act="segC" data-id="${esc(c.id)}">Hice seguimiento</button>`:''}
+  ${wa?`<a class="mini" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:''}
+  ${abierta?`<button class="mini verde" data-act="winC" data-id="${esc(c.id)}">Aceptó</button>`:''}</div></div>`}
+function vClientes(){
+  const cs=all('cli'),ab=cs.filter(c=>ABIERTA.includes(c.estado)),cer=cs.filter(c=>!ABIERTA.includes(c.estado)),si=cer.filter(c=>c.estado==='Aceptó').length;
+  header('Posibles clientes',ab.length?ab.length+(ab.length===1?' cotización esperando':' cotizaciones esperando'):'Cotizaciones enviadas',false);
+  const prom=ab.length?Math.round(ab.reduce((s,c)=>s+dias(c.enviada),0)/ab.length):0;
+  const l=cs.filter(c=>fCli==='todas'?true:fCli?c.estado===fCli:ABIERTA.includes(c.estado))
+    .sort((a,b)=>(ABIERTA.includes(b.estado)-ABIERTA.includes(a.estado))||(a.enviada||'').localeCompare(b.enviada||''));
+  return `<div class="kpis">${kpi('Esperando respuesta',ab.length+(ab.length===1?' cliente':' clientes'))}${kpi('Valor cotizado en espera',mshort(ab.reduce((s,c)=>s+(c.valor||0),0)))}
+  ${kpi('Tiempo promedio pensando',prom+(prom===1?' día':' días'),ab.length?'la más antigua: '+Math.max(...ab.map(c=>dias(c.enviada)))+' días':'')}${kpi('Aceptadas',cer.length?Math.round(si/cer.length*100)+'%':'—',cer.length?si+' de '+cer.length+' respondidas':'aún sin respuestas','pos')}</div>
+  <div class="mosaico"><button class="tile ancho" data-act="addC">${ico('sumar')}Nueva cotización enviada</button></div>
+  <select id="fCli" aria-label="Filtrar"><option value="">Esperando respuesta y en negociación</option><option value="todas"${fCli==='todas'?' selected':''}>Todas</option>${opts(EST_C,fCli)}</select>
+  <p class="nota">Verde: menos de una semana · amarillo: de 8 a 21 días · rojo: más de 3 semanas.</p>
+  <div class="lista">${l.length?l.map(cliCard).join(''):vacio(cs.length?'No hay cotizaciones en ese estado.':'Anota aquí cada cotización que mandes y la app te cuenta cuántos días lleva el cliente pensando.')}</div>`}
 const vacio=t=>`<div class="vacio">${esc(t)}</div>`;
 
 /* ---------- vistas ---------- */
@@ -191,6 +226,7 @@ function vInicio(){
   const ult=all('mov').sort((a,b)=>(b.fecha+b.creado).localeCompare(a.fecha+a.creado)).slice(0,4);
   const prox=act.sort((a,b)=>(a.inicio||'9').localeCompare(b.inicio||'9')).slice(0,2);
   return ring+`<div class="kpis">${kpi('Hoy',money(hoy),'en gastos')}${kpi('Balance del mes',money(bal),'ingresos menos gastos',bal<0?'neg':'')}${kpi('Ingresos del mes',money(inn),movs.filter(m=>m.tipo==='Ingreso').length+' registrados','pos')}${kpi('Utilidades esperadas',mshort(uts),act.length+(act.length===1?' contrato activo':' contratos activos'))}</div>
+  ${(()=>{const ab=all('cli').filter(c=>ABIERTA.includes(c.estado));if(!ab.length)return'';const mx=Math.max(...ab.map(c=>dias(c.enviada)));return `<button class="tarjeta fila" data-act="go" data-v="clientes"><div><div class="t-nom">${ab.length} ${ab.length===1?'cliente pensando':'clientes pensando'} una cotización</div><div class="t-sub">La más antigua lleva ${mx} ${mx===1?'día':'días'}</div></div>${ico('reloj')}</button>`})()}
   <div class="mosaico"><button class="tile" data-act="addG">${ico('menos')}Anotar gasto</button><button class="tile verde" data-act="addI">${ico('sumar')}Anotar ingreso</button>
   <button class="tile claro" data-act="addP">${ico('obra')}Nuevo contrato</button><button class="tile claro" data-act="go" data-v="gastos">${ico('avance')}¿En qué se va la plata?</button></div>
   <h2>Últimos movimientos</h2><div class="lista">${ult.length?ult.map(movCard).join(''):vacio('Aún no has anotado nada. Empieza con “Anotar gasto”.')}</div>
@@ -225,16 +261,17 @@ function vMas(){
   return `<button class="tarjeta fila" data-act="budget"><div><div class="t-nom">Presupuesto mensual</div><div class="t-sub">${pres?esc(money(pres))+' al mes':'Sin definir'}</div></div>${ico('meta')}</button>
   <button class="tarjeta fila" data-act="csvM"><div><div class="t-nom">Copiar movimientos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <button class="tarjeta fila" data-act="csvP"><div><div class="t-nom">Copiar contratos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
+  <button class="tarjeta fila" data-act="csvC"><div><div class="t-nom">Copiar posibles clientes</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <p class="nota">${coll?'Tus datos se guardan en tu cuenta de Claude y los ves igual en el celular y el computador.':'Tus datos se guardan en este navegador. Para tenerlos en el celular y el computador a la vez, abre la versión de Claude.'}</p>`}
 
 function render(){
-  const v={inicio:vInicio,gastos:vGastos,contratos:vContratos,mas:vMas}[view]||vInicio;
+  const v={inicio:vInicio,gastos:vGastos,contratos:vContratos,clientes:vClientes,mas:vMas}[view]||vInicio;
   const qf=document.activeElement&&document.activeElement.id==='q';
   $('#main').innerHTML=v();
   if(qf){const i=$('#q');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}
-  $('#tabs').innerHTML=[['inicio','Inicio','home'],['gastos','Gastos','plata'],['contratos','Contratos','obra'],['mas','Más','mas']].map(([k,n,i])=>`<a href="#${k}" class="${k===view?'activa':''}">${ico(i)}${n}</a>`).join('');
+  $('#tabs').innerHTML=[['inicio','Inicio','home'],['gastos','Gastos','plata'],['contratos','Contratos','obra'],['clientes','Posible cliente','cliente'],['mas','Más','mas']].map(([k,n,i])=>`<a href="#${k}" class="${k===view?'activa':''}">${ico(i)}${n}</a>`).join('');
 }
-function route(){view=['inicio','gastos','contratos','mas'].includes(location.hash.slice(1))?location.hash.slice(1):'inicio';render();window.scrollTo(0,0)}
+function route(){view=['inicio','gastos','contratos','clientes','mas'].includes(location.hash.slice(1))?location.hash.slice(1):'inicio';render();window.scrollTo(0,0)}
 
 /* ---------- formularios ---------- */
 function movForm(m,tipo){
@@ -259,6 +296,16 @@ function proyForm(p){
   <div class="fila2"><label class="campo">Estado<select name="estado" id="fEstado">${opts(ESTADOS.map(e=>e[0]),p?.estado)}</select></label>
   <label class="campo">Probabilidad (%)<input name="prob" id="fProb" type="number" inputmode="numeric" min="0" max="100" step="5" value="${esc(p?.prob??10)}"></label></div>
   <label class="campo">Notas<textarea name="notas" rows="3" maxlength="2000" placeholder="Proceso SECOP, requisitos, contactos…">${esc(p?.notas||'')}</textarea></label>`}
+function cliForm(c){
+  return `<label class="campo">Cliente (persona o entidad)<input name="cliente" maxlength="120" value="${esc(c?.cliente||'')}"></label>
+  <label class="campo">Teléfono o WhatsApp<input name="tel" type="tel" inputmode="tel" maxlength="20" value="${esc(c?.tel||'')}"></label>
+  <label class="campo">¿Qué se le cotizó?<textarea name="que" rows="3" maxlength="1500">${esc(c?.que||'')}</textarea></label>
+  <label class="campo">Valor cotizado<input name="valor" id="fMonto" class="grande" inputmode="numeric" autocomplete="off" placeholder="$ 0" value="${c&&c.valor?esc(c.valor.toLocaleString('es-CO')):''}"></label>
+  <div class="fila2"><label class="campo">Fecha en que se envió<input type="date" name="enviada" value="${esc(c?.enviada||today())}"></label>
+  <label class="campo">Empresa<select name="empresa">${opts(EMPRESAS,c?.empresa)}</select></label></div>
+  <div class="fila2"><label class="campo">Estado<select name="estado">${opts(EST_C,c?.estado)}</select></label>
+  <label class="campo">Último contacto<input type="date" name="ultimo" value="${esc(c?.ultimo||'')}"></label></div>
+  <label class="campo">Notas<textarea name="notas" rows="3" maxlength="2000" placeholder="Qué dijo, a quién llamar, qué falta…">${esc(c?.notas||'')}</textarea></label>`}
 function budgetForm(){const v=(items.get('config')||{}).presupuesto||0;
   return `<p class="nota">Lo máximo que quieres gastar cada mes. Déjalo vacío para quitarlo.</p><label class="campo">Presupuesto mensual<input name="presupuesto" id="fMonto" class="grande" inputmode="numeric" autocomplete="off" placeholder="$ 0" value="${v?esc(v.toLocaleString('es-CO')):''}"></label>`}
 function vEntryForm(o){return `<label class="campo">Título<input name="titulo" maxlength="120" value="${esc(o?.titulo||'')}"></label>
@@ -266,10 +313,10 @@ function vEntryForm(o){return `<label class="campo">Título<input name="titulo" 
   <label class="campo">Nota<textarea name="nota" rows="7" maxlength="20000">${esc(o?.nota||'')}</textarea></label>`}
 function vSetupForm(){return `<p class="nota">Para abrir el baúl, escribe esta palabra en el buscador de Gastos y dale Enter. No aparece en ninguna parte. Si la olvidas, lo que haya en el baúl no se puede recuperar.</p>
   <label class="campo">Palabra o frase secreta<input type="password" name="p1" autocomplete="new-password"></label><label class="campo">Repítela<input type="password" name="p2" autocomplete="new-password"></label>`}
-const TIT={mov:o=>o?'Editar movimiento':'Anotar',proy:o=>o?'Editar contrato':'Nuevo contrato o proyecto',budget:()=>'Presupuesto mensual',ventry:o=>o?'Editar nota':'Nueva nota',vsetup:()=>'Crea tu palabra secreta',vchange:()=>'Cambiar palabra secreta'};
-function openForm(kind,o,tipo){
+const TIT={cli:o=>o?'Editar cotización':'Nueva cotización enviada',mov:o=>o?'Editar movimiento':'Anotar',proy:o=>o?'Editar contrato':'Nuevo contrato o proyecto',budget:()=>'Presupuesto mensual',ventry:o=>o?'Editar nota':'Nueva nota',vsetup:()=>'Crea tu palabra secreta',vchange:()=>'Cambiar palabra secreta'};
+function openForm(kind,o,tipo,pre){
   editing={kind,o};tipo=o?.tipo||tipo||'Gasto';
-  const body={mov:()=>movForm(o,tipo),proy:()=>proyForm(o),budget:budgetForm,ventry:()=>vEntryForm(o),vsetup:vSetupForm,vchange:vSetupForm}[kind]();
+  const body={cli:()=>cliForm(o),mov:()=>movForm(o,tipo),proy:()=>proyForm(o||pre),budget:budgetForm,ventry:()=>vEntryForm(o),vsetup:vSetupForm,vchange:vSetupForm}[kind]();
   $('#pTit').textContent=TIT[kind](o);
   $('#frm').innerHTML=body+`<div class="error" id="fErr" hidden></div><button class="btn">Guardar</button>${o?'<button type="button" class="btn peligro" id="fDel">Eliminar</button>':''}`;
   $('#pane').hidden=false;$('#pane').scrollTop=0;
@@ -284,7 +331,7 @@ $('#frm').addEventListener('input',e=>{const t=e.target;
   if(t.id==='fEstado'){const x=ESTADOS.find(z=>z[0]===t.value);if(x)$('#fProb').value=x[1]}});
 $('#frm').addEventListener('click',e=>{if(e.target.id!=='fDel'||!editing||!editing.o)return;const {kind,o}=editing;
   if(kind==='ventry'){if(!vault)return;vault.entries=vault.entries.filter(x=>x.id!==o.id);closeForm();renderVault();vSave();toast('Nota eliminada',()=>{if(vault){vault.entries.unshift(o);renderVault();vSave()}});return}
-  closeForm();del(o.id);toast(kind==='mov'?'Movimiento eliminado':'Contrato eliminado',()=>put(o))});
+  closeForm();del(o.id);toast(kind==='mov'?'Movimiento eliminado':kind==='cli'?'Cotización eliminada':'Contrato eliminado',()=>put(o))});
 $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
   const fd=Object.fromEntries(new FormData($('#frm'))),{kind,o}=editing,bad=m=>{const x=$('#fErr');x.textContent=m;x.hidden=false};
   if(kind==='vsetup'||kind==='vchange'){
@@ -301,6 +348,9 @@ $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
     const d=new Date(fd.fecha+'T12:00');cur=new Date(d.getFullYear(),d.getMonth(),1);
   }else if(kind==='proy'){const valor=digits(fd.valor);if(!fd.nombre.trim())return bad('Escribe el nombre.');if(!valor)return bad('Escribe el valor del contrato.');
     rec={id:o?.id||newId('p'),kind:'proy',nombre:fd.nombre.trim(),objeto:fd.objeto.trim(),cliente:fd.cliente.trim(),empresa:fd.empresa,tipoP:fd.tipoP,valor,estado:fd.estado,prob:Math.max(0,Math.min(100,+fd.prob||0)),util:Math.max(0,Math.min(100,+fd.util||0)),inicio:fd.inicio||'',meses:+fd.meses||0,notas:fd.notas.trim(),creado:o?.creado||new Date().toISOString()};
+  }else if(kind==='cli'){if(!fd.cliente.trim())return bad('Escribe el nombre del cliente.');if(!fd.enviada)return bad('Pon la fecha en que se envió.');
+    const cerr=!ABIERTA.includes(fd.estado);
+    rec={id:o?.id||newId('c'),kind:'cli',cliente:fd.cliente.trim(),tel:fd.tel.trim(),que:fd.que.trim(),valor:digits(fd.valor),enviada:fd.enviada,empresa:fd.empresa,estado:fd.estado,ultimo:fd.ultimo||'',notas:fd.notas.trim(),cerrada:cerr?(o?.cerrada||today()):'',creado:o?.creado||new Date().toISOString()};
   }else rec={id:'config',kind:'config',presupuesto:digits(fd.presupuesto)};
   closeForm();put(rec);toast('Guardado')});
 $('#pBack').addEventListener('click',closeForm);
@@ -312,12 +362,18 @@ const csvCell=v=>{const s=String(v??'');return /[",;\n]/.test(s)?'"'+s.replace(/
 async function copyCsv(rows,label){try{await navigator.clipboard.writeText(rows.map(r=>r.map(csvCell).join(';')).join('\n'));toast(label+' copiados: pégalos en Excel')}catch(e){toast('No se pudo copiar en este navegador')}}
 $('#main').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
   if(a==='addG')openForm('mov',null,'Gasto');if(a==='addI')openForm('mov',null,'Ingreso');if(a==='addP')openForm('proy');if(a==='budget')openForm('budget');
+  if(a==='addC')openForm('cli');if(a==='editC')openForm('cli',items.get(b.dataset.id));
+  if(a==='segC'){const c=items.get(b.dataset.id);if(c){put({...c,ultimo:today()});toast('Seguimiento anotado: hoy')}}
+  if(a==='winC'){const c=items.get(b.dataset.id);if(c){put({...c,estado:'Aceptó',cerrada:today()});
+    openForm('proy',null,null,{nombre:(c.que||c.cliente).slice(0,140),objeto:c.que,cliente:c.cliente,empresa:c.empresa,valor:c.valor||0,estado:'Adjudicado',prob:90,notas:c.notas});
+    toast('¡Bien! Completa los datos del contrato')}}
+  if(a==='csvC')copyCsv([['Cliente','Teléfono','Qué se cotizó','Valor cotizado','Empresa','Enviada','Estado','Días pensando','Último contacto','Notas'],...all('cli').map(c=>[c.cliente,c.tel,c.que,c.valor,c.empresa,c.enviada,c.estado,dias(c.enviada,ABIERTA.includes(c.estado)?null:c.cerrada),c.ultimo,c.notas])],'Posibles clientes');
   if(a==='editM')openForm('mov',items.get(b.dataset.id));if(a==='editP')openForm('proy',items.get(b.dataset.id));if(a==='go')location.hash=b.dataset.v;
   if(a==='csvM'){const pn=id=>(items.get(id)||{}).nombre||'';copyCsv([['Fecha','Tipo','Categoría','Descripción','Medio de pago','Proyecto','Monto'],...all('mov').sort((x,y)=>x.fecha.localeCompare(y.fecha)).map(m=>[m.fecha,m.tipo,m.categoria,m.descripcion,m.metodo,pn(m.proyecto),m.monto])],'Movimientos')}
   if(a==='csvP')copyCsv([['Nombre','Objeto','Entidad o cliente','Empresa','Tipo','Estado','Probabilidad %','Valor','Tiempo de ejecución (meses)','Utilidad %','Utilidad','Inicio','Notas'],...all('proy').map(p=>[p.nombre,p.objeto,p.cliente,p.empresa,p.tipoP,p.estado,p.prob,p.valor,p.meses,p.util,Math.round(ut(p)),p.inicio,p.notas])],'Contratos')});
 $('#hAcc').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;cur=new Date(cur.getFullYear(),cur.getMonth()+(b.dataset.act==='mPrev'?-1:1),1);render()});
 $('#main').addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('#movList').innerHTML=listaMovs(mes().movs)}});
-$('#main').addEventListener('change',e=>{if(e.target.id==='fEst'){fEst=e.target.value;render()}});
+$('#main').addEventListener('change',e=>{if(e.target.id==='fEst'){fEst=e.target.value;render()}if(e.target.id==='fCli'){fCli=e.target.value;render()}});
 
 /* ---------- baúl: cifrado con la palabra secreta (AES-GCM, clave PBKDF2); se abre escribiéndola en el buscador + Enter ---------- */
 const enc=new TextEncoder(),dec=new TextDecoder();
