@@ -109,6 +109,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--navy-2);outline-off
 .mic.on{background:var(--red);color:#fff;animation:late 1s infinite}@keyframes late{50%{opacity:.75}}
 .mic .ic{width:26px;height:26px}
 .cargando{display:flex;align-items:center;gap:10px;justify-content:center;padding:28px 10px;color:var(--navy-tx);font-weight:600}
+.recs{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.recs .mini{justify-content:flex-start;text-align:left;width:100%;font-weight:500}
+.recs .mini.vencido{color:var(--muted);text-decoration:line-through}
 .capa{position:fixed;inset:0;background:var(--bg);z-index:40;overflow:auto}
 .capa[hidden]{display:none}.capa main{padding-bottom:40px}
 .capa.baul{z-index:30}.capa.baul .barra{background:#16233B}
@@ -198,7 +201,8 @@ function proyCard(p){const d=p.inicio?new Date(p.inicio+'T12:00'):null,est=p.est
   ${p.ant?`<div class="t-sub" style="margin-top:8px">Anticipo ${esc(p.ant)}%: <b style="color:var(--navy-tx)">${esc(mshort(antV(p)))}</b> · ${p.antRec?'recibido el '+esc(fcorta(p.antRec)):'pendiente'}</div>`:''}
   <div class="prog"><div style="width:${Math.max(0,Math.min(100,+p.prob||0))}%"></div></div>
   <div class="t-pie"><span class="chip${cls}">${esc(est)}</span><span>${esc(p.prob||0)}% probable</span><span>${d?'Inicia '+esc(d.toLocaleDateString('es-CO',{month:'short',year:'numeric'})):'Sin fecha de inicio'}</span></div></button>
-  ${antPend(p)?`<div class="acc"><span class="nota">Anticipo por cobrar: <b>${esc(money(antV(p)))}</b></span><span style="flex:1"></span><button class="mini verde" data-act="antP" data-id="${esc(p.id)}">Recibí el anticipo</button></div>`:''}</div>`}
+  ${ACTIVOS.includes(est)?`<div class="acc">${antPend(p)?`<span class="nota">Anticipo por cobrar: <b>${esc(money(antV(p)))}</b></span>`:''}<span style="flex:1"></span><button class="mini" data-act="addR" data-pid="${esc(p.id)}">${ico('reloj')} Recordarme</button>${antPend(p)?`<button class="mini verde" data-act="antP" data-id="${esc(p.id)}">Recibí el anticipo</button>`:''}</div>`:''}${recsHtml(p)}</div>`}
+const recsHtml=x=>(x.recs||[]).length?`<div class="recs">${x.recs.slice().sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora)).map(r=>`<button class="mini${r.fecha<today()?' vencido':''}" data-act="editR" data-pid="${esc(x.id)}" data-rid="${esc(r.id)}">${ico('reloj')} ${esc(cap(new Date(r.fecha+'T12:00').toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'})))} ${esc(r.hora)} · ${esc(r.texto)}</button>`).join('')}</div>`:'';
 function cliCard(c){
   const abierta=ABIERTA.includes(c.estado),n=dias(c.enviada,abierta?null:c.cerrada),tone=!abierta?'fin':n>21?'mal':n>7?'ojo':'';
   const tel=String(c.tel||'').replace(/\D/g,''),wa=tel?(tel.length===10?'57'+tel:tel):'';
@@ -210,7 +214,8 @@ function cliCard(c){
   <div class="acc"><span class="chip${chip}">${esc(c.estado)}</span><span style="flex:1"></span>
   ${abierta?`<button class="mini" data-act="segC" data-id="${esc(c.id)}">Hice seguimiento</button>`:''}
   ${wa?`<a class="mini" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:''}
-  ${abierta?`<button class="mini verde" data-act="winC" data-id="${esc(c.id)}">Aceptó</button>`:''}</div></div>`}
+  ${abierta?`<button class="mini" data-act="addR" data-pid="${esc(c.id)}">${ico('reloj')} Recordarme</button>`:''}
+  ${abierta?`<button class="mini verde" data-act="winC" data-id="${esc(c.id)}">Aceptó</button>`:''}</div>${recsHtml(c)}</div>`}
 function vClientes(){
   const cs=all('cli'),ab=cs.filter(c=>ABIERTA.includes(c.estado)),cer=cs.filter(c=>!ABIERTA.includes(c.estado)),si=cer.filter(c=>c.estado==='Aceptó').length;
   header('Posibles clientes',ab.length?ab.length+(ab.length===1?' cotización esperando':' cotizaciones esperando'):'Cotizaciones enviadas',false);
@@ -272,6 +277,9 @@ function vMas(){
   const pres=(items.get('config')||{}).presupuesto||0;
   header('Más','Ajustes y datos',false);
   return `<button class="tarjeta fila" data-act="budget"><div><div class="t-nom">Presupuesto mensual</div><div class="t-sub">${pres?esc(money(pres))+' al mes':'Sin definir'}</div></div>${ico('meta')}</button>
+  ${gid()?`<button class="tarjeta fila" data-act="gConectar"><div><div class="t-nom">Google Calendar</div><div class="t-sub">${gTok&&Date.now()<gExp?'Conectado':'Listo · toca para conectar ahora'}</div></div>${ico('reloj')}</button>
+  <button class="tarjeta fila" data-act="diario"><div><div class="t-nom">Recordatorio diario de gastos</div><div class="t-sub">${cfg().diario?'Todos los días a las '+esc(cfg().diario.hora):'Sin activar'}</div></div>${ico('reloj')}</button>`:''}
+  <button class="tarjeta fila" data-act="gcfg"><div><div class="t-nom">${gid()?'Cambiar conexión con Google':'Conectar Google Calendar'}</div><div class="t-sub">${gid()?'ID de cliente guardado':'Pega aquí el ID de cliente de Google'}</div></div>${ico('llave')}</button>
   <button class="tarjeta fila" data-act="csvM"><div><div class="t-nom">Copiar movimientos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <button class="tarjeta fila" data-act="csvP"><div><div class="t-nom">Copiar contratos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <button class="tarjeta fila" data-act="csvC"><div><div class="t-nom">Copiar posibles clientes</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
@@ -331,12 +339,13 @@ function vEntryForm(o){return `<label class="campo">Título<input name="titulo" 
   <label class="campo">Nota<textarea name="nota" rows="7" maxlength="20000">${esc(o?.nota||'')}</textarea></label>`}
 function vSetupForm(){return `<p class="nota">Para abrir el baúl, escribe esta palabra en el buscador de Gastos y dale Enter. No aparece en ninguna parte. Si la olvidas, lo que haya en el baúl no se puede recuperar.</p>
   <label class="campo">Palabra o frase secreta<input type="password" name="p1" autocomplete="new-password"></label><label class="campo">Repítela<input type="password" name="p2" autocomplete="new-password"></label>`}
-const TIT={dictar:()=>'Dictar',cli:o=>o?'Editar cotización':'Nueva cotización enviada',mov:o=>o?'Editar movimiento':'Anotar',proy:o=>o?'Editar contrato':'Nuevo contrato o proyecto',budget:()=>'Presupuesto mensual',ventry:o=>o?'Editar nota':'Nueva nota',vsetup:()=>'Crea tu palabra secreta',vchange:()=>'Cambiar palabra secreta'};
+const TIT={recordar:o=>o?'Editar recordatorio':'Recordarme',gcfg:()=>'Google Calendar',diario:()=>'Recordatorio diario',dictar:()=>'Dictar',cli:o=>o?'Editar cotización':'Nueva cotización enviada',mov:o=>o?'Editar movimiento':'Anotar',proy:o=>o?'Editar contrato':'Nuevo contrato o proyecto',budget:()=>'Presupuesto mensual',ventry:o=>o?'Editar nota':'Nueva nota',vsetup:()=>'Crea tu palabra secreta',vchange:()=>'Cambiar palabra secreta'};
 function openForm(kind,o,tipo,pre){
   editing={kind,o};tipo=o?.tipo||pre?.tipo||tipo||'Gasto';
-  const body={dictar:dictarForm,cli:()=>cliForm(o||pre),mov:()=>movForm(o||pre,tipo),proy:()=>proyForm(o||pre),budget:budgetForm,ventry:()=>vEntryForm(o),vsetup:vSetupForm,vchange:vSetupForm}[kind]();
+  const body={recordar:()=>recForm(o||pre),gcfg:gcfgForm,diario:diarioForm,dictar:dictarForm,cli:()=>cliForm(o||pre),mov:()=>movForm(o||pre,tipo),proy:()=>proyForm(o||pre),budget:budgetForm,ventry:()=>vEntryForm(o),vsetup:vSetupForm,vchange:vSetupForm}[kind]();
   $('#pTit').textContent=TIT[kind](o);
-  $('#frm').innerHTML=body+`<div class="error" id="fErr" hidden></div><button class="btn">${kind==='dictar'?'Entender lo que dije':'Guardar'}</button>${o?'<button type="button" class="btn peligro" id="fDel">Eliminar</button>':''}`;
+  const conDel=o||(kind==='diario'&&cfg().diario);
+  $('#frm').innerHTML=body+`<div class="error" id="fErr" hidden></div><button class="btn">${kind==='dictar'?'Entender lo que dije':kind==='recordar'||kind==='diario'?'Guardar en Google Calendar':'Guardar'}</button>${conDel?'<button type="button" class="btn peligro" id="fDel">Eliminar</button>':''}`;
   $('#pane').hidden=false;$('#pane').scrollTop=0;
   const f=$('#fMonto')||$('#frm input:not([type=radio])');if(f&&kind!=='proy'&&!pre)f.focus();
   const im=$('#fFoto');if(im){if(pendingFoto)im.src=URL.createObjectURL(pendingFoto);else if(o?.foto)fotoGet(o.id).then(b=>{if(b&&$('#fFoto'))$('#fFoto').src=URL.createObjectURL(b);else if($('#fFoto'))$('#fFoto').remove()})}
@@ -349,11 +358,25 @@ $('#frm').addEventListener('input',e=>{const t=e.target;
   if((t.id==='fMonto'||t.id==='fUtil')&&$('#fUtilV'))$('#fUtilV').value=money(digits($('#fMonto').value)*(+$('#fUtil').value||0)/100);
   if(t.name==='tipo'){$('#fCat').innerHTML=opts(t.value==='Ingreso'?CAT_I:CAT_G)}
   if(t.id==='fEstado'){const x=ESTADOS.find(z=>z[0]===t.value);if(x)$('#fProb').value=x[1]}});
-$('#frm').addEventListener('click',e=>{if(e.target.closest('#micBtn')){toggleMic();return}if(e.target.id!=='fDel'||!editing||!editing.o)return;const {kind,o}=editing;
+$('#frm').addEventListener('click',e=>{if(e.target.closest('#micBtn')){toggleMic();return}if(e.target.id!=='fDel'||!editing)return;const {kind,o}=editing;
+  if(kind==='diario'){const d=cfg().diario;closeForm();if(d)conGoogle(async()=>{try{await gApi('DELETE','/'+encodeURIComponent(d.id));const c={...cfg()};delete c.diario;put({...c,id:'config',kind:'config'});toast('Recordatorio diario eliminado')}catch(err){gErr(err)}});return}
+  if(!o)return;
+  if(kind==='recordar'){const {pid,r}=o;closeForm();conGoogle(async()=>{try{await gApi('DELETE','/'+encodeURIComponent(r.id));const x=items.get(pid);if(x)put({...x,recs:(x.recs||[]).filter(y=>y.id!==r.id)});toast('Recordatorio eliminado de Google Calendar')}catch(err){gErr(err)}});return}
   if(kind==='ventry'){if(!vault)return;vault.entries=vault.entries.filter(x=>x.id!==o.id);closeForm();renderVault();vSave();toast('Nota eliminada',()=>{if(vault){vault.entries.unshift(o);renderVault();vSave()}});return}
-  closeForm();del(o.id);toast(kind==='mov'?'Movimiento eliminado':kind==='cli'?'Cotización eliminada':'Contrato eliminado',()=>put(o))});
+  closeForm();del(o.id);if(o.recs?.length)borrarRecs(o,false);toast(kind==='mov'?'Movimiento eliminado':kind==='cli'?'Cotización eliminada':'Contrato eliminado',()=>put(o))});
 $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
   const fd=Object.fromEntries(new FormData($('#frm'))),{kind,o}=editing,bad=m=>{const x=$('#fErr');x.textContent=m;x.hidden=false};
+  if(kind==='gcfg'){const v=(fd.gcid||'').trim();if(v&&!/\.apps\.googleusercontent\.com$/.test(v))return bad('El ID debe terminar en .apps.googleusercontent.com');
+    gClient=null;gTok=null;try{sessionStorage.removeItem('gtok')}catch(err){}
+    closeForm();put({...cfg(),id:'config',kind:'config',gcid:v});if(v){gLoad().then(gInit).catch(()=>{});toast('Guardado. Ahora toca “Google Calendar” para conectar')}else toast('Conexión quitada');return}
+  if(kind==='recordar'){const x=o||pre_,par=items.get(x.pid);if(!par){closeForm();return}
+    if(!fd.texto.trim())return bad('Escribe qué te recuerdo.');if(!fd.fecha||!fd.hora)return bad('Pon el día y la hora.');
+    const body=evBody(fd.texto.trim(),fd.fecha,fd.hora,recDesc(par),false),old=o?.r;closeForm();
+    conGoogle(async()=>{try{const ev=old?await gApi('PATCH','/'+encodeURIComponent(old.id),body):await gApi('POST','',body);
+      const nr={id:ev.id,fecha:fd.fecha,hora:fd.hora,texto:fd.texto.trim()},act=items.get(x.pid)||par;
+      put({...act,recs:[...(act.recs||[]).filter(y=>y.id!==(old?.id||ev.id)),nr]});toast('Listo: quedó en tu Google Calendar')}catch(err){gErr(err)}});return}
+  if(kind==='diario'){if(!fd.hora)return bad('Elige la hora.');const d=cfg().diario,body=evBody('Anota los gastos de hoy',today(),fd.hora,'Abre Mis finanzas y anota lo que gastaste hoy.',true);closeForm();
+    conGoogle(async()=>{try{const ev=d?await gApi('PATCH','/'+encodeURIComponent(d.id),body):await gApi('POST','',body);put({...cfg(),id:'config',kind:'config',diario:{id:ev.id,hora:fd.hora}});toast('Te recordaré todos los días a las '+fd.hora)}catch(err){gErr(err)}});return}
   if(kind==='dictar'){const t=(fd.texto||'').trim();if(!t)return bad('Dicta o escribe qué gastaste, qué te pagaron o a quién le cotizaste.');
     stopMic();const r=entender(t);if(r.kind==='cli')openForm('cli',null,null,r);else openForm('mov',null,null,r);
     toast(r.monto||r.valor?'Revisa y dale Guardar':'No entendí el monto: escríbelo');return}
@@ -376,8 +399,10 @@ $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
   }else if(kind==='cli'){if(!fd.cliente.trim())return bad('Escribe el nombre del cliente.');if(!fd.enviada)return bad('Pon la fecha en que se envió.');
     const cerr=!ABIERTA.includes(fd.estado);
     rec={id:o?.id||newId('c'),kind:'cli',cliente:fd.cliente.trim(),tel:fd.tel.trim(),que:fd.que.trim(),valor:digits(fd.valor),ant:Math.max(0,Math.min(100,+fd.ant||0)),enviada:fd.enviada,empresa:fd.empresa,estado:fd.estado,ultimo:fd.ultimo||'',notas:fd.notas.trim(),cerrada:cerr?(o?.cerrada||today()):'',creado:o?.creado||new Date().toISOString()};
-  }else rec={id:'config',kind:'config',presupuesto:digits(fd.presupuesto)};
-  closeForm();put(rec);toast('Guardado')});
+  }else rec={...cfg(),id:'config',kind:'config',presupuesto:digits(fd.presupuesto)};
+  if((kind==='cli'||kind==='proy')&&o?.recs)rec.recs=o.recs;
+  const cerro=rec.recs?.length&&((kind==='cli'&&!ABIERTA.includes(rec.estado))||(kind==='proy'&&!ACTIVOS.includes(rec.estado)));
+  closeForm();put(rec);toast('Guardado');if(cerro)borrarRecs(rec,true)});
 $('#pBack').addEventListener('click',closeForm);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pane').hidden)closeForm()});
 $('#tAct').addEventListener('click',()=>{const f=undoFn;$('#toast').hidden=true;undoFn=null;if(f)f()});
@@ -391,7 +416,10 @@ $('#main').addEventListener('click',e=>{const b=e.target.closest('[data-act]');i
   if(a==='addC')openForm('cli');if(a==='editC')openForm('cli',items.get(b.dataset.id));
   if(a==='antP'){const p=items.get(b.dataset.id);if(p){put({...p,antRec:today()});toast('Anticipo recibido hoy',()=>put(p))}}
   if(a==='segC'){const c=items.get(b.dataset.id);if(c){put({...c,ultimo:today()});toast('Seguimiento anotado: hoy')}}
-  if(a==='winC'){const c=items.get(b.dataset.id);if(c){put({...c,estado:'Aceptó',cerrada:today()});
+  if(a==='addR'){const x=items.get(b.dataset.pid);if(x)openForm('recordar',null,null,{pid:x.id,texto:recTexto(x),fecha:masDias(3),hora:'09:00'})}
+  if(a==='editR'){const x=items.get(b.dataset.pid),r=x&&(x.recs||[]).find(y=>y.id===b.dataset.rid);if(r)openForm('recordar',{pid:x.id,r,texto:r.texto,fecha:r.fecha,hora:r.hora})}
+  if(a==='gcfg')openForm('gcfg');if(a==='diario')openForm('diario');if(a==='gConectar')conGoogle(()=>{toast('Google Calendar conectado');render()});
+  if(a==='winC'){const c=items.get(b.dataset.id);if(c){const cc={...c,estado:'Aceptó',cerrada:today()};put(cc);if(cc.recs?.length)borrarRecs(cc,true);
     openForm('proy',null,null,{nombre:(c.que||c.cliente).slice(0,140),objeto:c.que,cliente:c.cliente,empresa:c.empresa,valor:c.valor||0,ant:c.ant||'',estado:'Adjudicado',prob:90,notas:c.notas});
     toast('¡Bien! Completa los datos del contrato')}}
   if(a==='csvC')copyCsv([['Cliente','Teléfono','Qué se cotizó','Valor cotizado','Anticipo %','Anticipo','Empresa','Enviada','Estado','Días pensando','Último contacto','Notas'],...all('cli').map(c=>[c.cliente,c.tel,c.que,c.valor,c.ant||'',antV(c)||'',c.empresa,c.enviada,c.estado,dias(c.enviada,ABIERTA.includes(c.estado)?null:c.cerrada),c.ultimo,c.notas])],'Posibles clientes');
@@ -401,6 +429,45 @@ $('#main').addEventListener('click',e=>{const b=e.target.closest('[data-act]');i
 $('#hAcc').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;cur=new Date(cur.getFullYear(),cur.getMonth()+(b.dataset.act==='mPrev'?-1:1),1);render()});
 $('#main').addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('#movList').innerHTML=listaMovs(mes().movs)}});
 $('#main').addEventListener('change',e=>{if(e.target.classList.contains('fotoIn')){const f=e.target.files[0];e.target.value='';if(f)leerFactura(f);return}if(e.target.id==='fEst'){fEst=e.target.value;render()}if(e.target.id==='fCli'){fCli=e.target.value;render()}});
+
+/* ---------- Google Calendar: la app crea, cambia y borra tus recordatorios (sin servidor) ---------- */
+const GSCOPE='https://www.googleapis.com/auth/calendar.events',APPURL=location.href.split('#')[0];
+let gTok=null,gExp=0,gClient=null,gPend=null,pre_=null;
+try{const t=JSON.parse(sessionStorage.getItem('gtok')||'null');if(t&&t.exp>Date.now()){gTok=t.tok;gExp=t.exp}}catch(e){}
+const cfg=()=>items.get('config')||{};
+const gid=()=>(cfg().gcid||'').trim();
+const masDias=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const recTexto=x=>x.kind==='cli'?'Llamar a '+x.cliente+' por la cotización'+(x.valor?' de '+mshort(x.valor):''):(antPend(x)?'Cobrar anticipo de '+x.nombre:'Revisar contrato: '+x.nombre);
+const recDesc=x=>x.kind==='cli'?[x.que,x.valor?'Valor cotizado: '+money(x.valor):'',x.ant?'Anticipo '+x.ant+'%: '+money(antV(x)):'',x.tel?'Teléfono: '+x.tel:'','Enviada el '+fcorta(x.enviada)].filter(Boolean).join('\n'):[x.objeto,x.cliente,'Valor: '+money(x.valor),x.ant?'Anticipo '+x.ant+'%: '+money(antV(x))+(x.antRec?' (recibido)':' (pendiente)'):''].filter(Boolean).join('\n');
+function gLoad(){return window.google&&google.accounts&&google.accounts.oauth2?Promise.resolve():cargarJs('https://accounts.google.com/gsi/client')}
+function gInit(){if(gClient||!gid()||!(window.google&&google.accounts&&google.accounts.oauth2))return;
+  gClient=google.accounts.oauth2.initTokenClient({client_id:gid(),scope:GSCOPE,
+    callback:r=>{if(r.error){gPend=null;toast('Google no dio el permiso');return}gTok=r.access_token;gExp=Date.now()+((+r.expires_in||3600)-60)*1000;
+      try{sessionStorage.setItem('gtok',JSON.stringify({tok:gTok,exp:gExp}))}catch(e){}const f=gPend;gPend=null;if(f)f();else render()},
+    error_callback:e=>{gPend=null;toast(e&&e.type==='popup_closed'?'Se cerró la ventana de Google':'No se abrió Google. Si estás en el ícono, prueba desde Safari')}})}
+function conGoogle(fn){
+  if(!gid()){toast('Primero conecta Google Calendar en Más');return}
+  if(gTok&&Date.now()<gExp){fn();return}
+  gInit();if(!gClient){toast('Cargando Google… toca otra vez en un segundo');gLoad().then(gInit).catch(()=>toast('No se pudo cargar Google: revisa la conexión'));return}
+  gPend=fn;gClient.requestAccessToken({prompt:''})}
+async function gApi(method,path,body){
+  const r=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events'+path,{method,headers:{Authorization:'Bearer '+gTok,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){gTok=null;try{sessionStorage.removeItem('gtok')}catch(e){}throw new Error('auth')}
+  if(method==='DELETE'&&(r.status===404||r.status===410))return null;
+  if(!r.ok)throw new Error('g'+r.status);return method==='DELETE'||r.status===204?null:r.json()}
+function gErr(e){toast(e&&e.message==='auth'?'Se venció el permiso de Google: toca otra vez':'Google Calendar no respondió. Revisa la conexión')}
+function evBody(texto,fecha,hora,desc,diario){const [h,m]=hora.split(':').map(Number),fin=Math.min(h*60+m+30,23*60+59);
+  const b={summary:texto,description:(desc?desc+'\n\n':'')+'Desde Mis finanzas: '+APPURL,start:{dateTime:fecha+'T'+pad(h)+':'+pad(m)+':00',timeZone:'America/Bogota'},end:{dateTime:fecha+'T'+pad(Math.floor(fin/60))+':'+pad(fin%60)+':00',timeZone:'America/Bogota'},reminders:{useDefault:false,overrides:[{method:'popup',minutes:0}]}};
+  if(diario)b.recurrence=['RRULE:FREQ=DAILY'];return b}
+function borrarRecs(x,guardar){const ids=(x.recs||[]).filter(r=>r.fecha>=today()).map(r=>r.id);if(!ids.length){if(guardar)put({...x,recs:[]});return}
+  conGoogle(async()=>{try{for(const id of ids)await gApi('DELETE','/'+encodeURIComponent(id));if(guardar){const a=items.get(x.id);if(a)put({...a,recs:[]})}toast(ids.length===1?'Borré su recordatorio de Google Calendar':'Borré sus '+ids.length+' recordatorios de Google Calendar')}catch(err){gErr(err)}})}
+function recForm(x){pre_=x;return `<p class="nota">Se guarda en tu Google Calendar con alarma, y te llega la notificación aunque la app esté cerrada.</p>
+  <label class="campo">¿Qué te recuerdo?<input name="texto" maxlength="200" value="${esc(x?.texto||'')}"></label>
+  <div class="fila2"><label class="campo">Día<input type="date" name="fecha" value="${esc(x?.fecha||masDias(1))}"></label><label class="campo">Hora<input type="time" name="hora" value="${esc(x?.hora||'09:00')}"></label></div>`}
+function gcfgForm(){return `<p class="nota">Pega el <b>ID de cliente</b> que creaste en Google Cloud (termina en .apps.googleusercontent.com). No es una clave secreta. Déjalo vacío para quitar la conexión.</p>
+  <label class="campo">ID de cliente de Google<input name="gcid" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(gid())}"></label>`}
+function diarioForm(){const d=cfg().diario;return `<p class="nota">Crea un evento que se repite todos los días en tu Google Calendar, con alarma, para que no se te olvide anotar los gastos.</p>
+  <label class="campo">Hora<input type="time" name="hora" value="${esc(d?.hora||'20:00')}"></label>`}
 
 /* ---------- dictado, lectura de facturas y fotos (todo en el celular, sin claves) ---------- */
 let pendingFoto=null,rec_=null;
@@ -525,6 +592,7 @@ $('#main').addEventListener('keydown',async e=>{if(e.target.id!=='q'||e.key!=='E
 /* ---------- arranque ---------- */
 window.addEventListener('hashchange',route);
 loadLocal();route();setStatus('local');
+if(gid())gLoad().then(gInit).catch(()=>{});
 (async()=>{
   if(!window.claude||!claude.use)return;
   try{const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);const id=user?await user.id():null;if(!db||!id)return;
