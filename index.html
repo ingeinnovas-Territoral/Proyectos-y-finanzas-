@@ -273,7 +273,7 @@ function vGastos(){
   <div class="mosaico"><button class="tile" data-act="addG">${ico('menos')}Anotar gasto</button><button class="tile verde" data-act="addI">${ico('sumar')}Anotar ingreso</button>${tilesIA()}</div>
   ${cs.length?`<h2>En qué se va la plata</h2><div class="tarjeta">${cs.map(([c,v])=>`<div class="cat"><span>${esc(c)}</span><div class="prog"><div style="width:${(v/mx*100).toFixed(1)}%"></div></div><b>${esc(money(v))}</b></div>`).join('')}</div>`:''}
   ${seccionGrupos()}
-  <h2>Movimientos</h2><div class="buscar">${ico('buscar')}<input id="q" type="search" placeholder="Buscar en este mes" aria-label="Buscar movimientos" value="${esc(q)}" autocomplete="off"></div>
+  <h2>Movimientos</h2><div class="buscar">${ico('buscar')}<input id="q" type="search" placeholder="Buscar en este mes" aria-label="Buscar movimientos" value="${esc(q)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
   <div class="lista" id="movList">${listaMovs(movs)}</div>`}
 function listaMovs(movs){
   const t=q.trim().toLowerCase(),pn=id=>(items.get(id)||{}).nombre||'';
@@ -358,7 +358,7 @@ function vEntryForm(o){return `<label class="campo">Título<input name="titulo" 
   <label class="campo">Nota<textarea name="nota" rows="7" maxlength="20000">${esc(o?.nota||'')}</textarea></label>
   ${fotosBlock()}<p class="nota">Las fotos del baúl quedan cifradas con tu palabra secreta y solo en este celular. La app no puede borrarlas de tu galería: hazlo tú en Fotos (ver abajo).</p>`}
 function vSetupForm(){return `<p class="nota">Para abrir el baúl, escribe esta palabra en el buscador de Gastos y dale Enter. No aparece en ninguna parte. Si la olvidas, lo que haya en el baúl no se puede recuperar.</p>
-  <label class="campo">Palabra o frase secreta<input type="password" name="p1" autocomplete="new-password"></label><label class="campo">Repítela<input type="password" name="p2" autocomplete="new-password"></label>`}
+  <label class="campo">Palabra o frase secreta<input type="password" name="p1" autocomplete="new-password" autocapitalize="off" autocorrect="off"></label><label class="campo">Repítela<input type="password" name="p2" autocomplete="new-password" autocapitalize="off" autocorrect="off"></label>`}
 const TIT={grupo:o=>o?'Editar grupo':'Nuevo grupo',recordar:o=>o?'Editar recordatorio':'Recordarme',gcfg:()=>'Google Calendar',diario:()=>'Recordatorio diario',dictar:()=>'Dictar',cli:o=>o?'Editar cotización':'Nueva cotización enviada',mov:o=>o?'Editar movimiento':'Anotar',proy:o=>o?'Editar contrato':'Nuevo contrato o proyecto',budget:()=>'Presupuesto mensual',ventry:o=>o?'Editar nota':'Nueva nota',vsetup:()=>'Crea tu palabra secreta',vchange:()=>'Cambiar palabra secreta'};
 function openForm(kind,o,tipo,pre){
   editing={kind,o};tipo=o?.tipo||pre?.tipo||tipo||'Gasto';
@@ -408,7 +408,7 @@ $('#frm').addEventListener('submit',e=>{e.preventDefault();if(!editing)return;
     stopMic();const r=entender(t);if(r.kind==='cli')openForm('cli',null,null,r);else openForm('mov',null,null,r);
     toast(r.monto||r.valor?'Revisa y dale Guardar':'No entendí el monto: escríbelo');return}
   if(kind==='vsetup'||kind==='vchange'){
-    if((fd.p1||'').length<4)return bad('Usa al menos 4 caracteres.');if(fd.p1!==fd.p2)return bad('Las dos no coinciden.');
+    fd.p1=(fd.p1||'').trim();fd.p2=(fd.p2||'').trim();if(fd.p1.length<4)return bad('Usa al menos 4 caracteres.');if(fd.p1!==fd.p2)return bad('Las dos no coinciden.');
     if(!window.crypto||!crypto.subtle)return bad('Este navegador no permite cifrar el baúl.');
     const salt=crypto.getRandomValues(new Uint8Array(16)),ents=vault?vault.entries:[];
     const viejo=vault?vault.key:null;
@@ -672,8 +672,10 @@ $('#vList').addEventListener('click',e=>{const b=e.target.closest('[data-id]');i
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&vault)closeVault()});
 $('#main').addEventListener('keydown',async e=>{if(e.target.id!=='q'||e.key!=='Enter')return;e.preventDefault();const v=e.target.value;
   if(!items.get('vault')){if(['baul','baúl'].includes(v.trim().toLowerCase())){q='';e.target.value='';$('#movList').innerHTML=listaMovs(mes().movs);e.target.blur();openForm('vsetup')}return}
-  if(v.length<4)return;
-  if(await vTry(v)){q='';e.target.value='';e.target.blur();$('#movList').innerHTML=listaMovs(mes().movs);openVault()}});
+  if(v.trim().length<4)return;
+  const t0=v.trim(),cands=[...new Set([v,t0,t0.charAt(0).toLowerCase()+t0.slice(1),t0.charAt(0).toUpperCase()+t0.slice(1),t0.toLowerCase()])];
+  let ok=false;for(const c of cands){if(await vTry(c)){ok=true;break}}
+  if(ok){q='';e.target.value='';e.target.blur();$('#movList').innerHTML=listaMovs(mes().movs);openVault()}});
 
 /* ---------- arranque ---------- */
 window.addEventListener('hashchange',route);
