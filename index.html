@@ -158,7 +158,7 @@ obra:"M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01",
 mas:"M4 6h16M4 12h16M4 18h16",sumar:"M12 5v14M5 12h14",menos:"M5 12h14",atras:"M15 6l-6 6 6 6",adel:"M9 6l6 6-6 6",
 avance:"M3 17l6-6 4 4 8-8M14 7h7v7",doc:"M14 3v4a1 1 0 0 0 1 1h4M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zM9 13h6M9 17h6",
 buscar:"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0-14 0M21 21l-6-6",meta:"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0-10 0M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0",
-cliente:"M8 7a4 4 0 1 0 8 0a4 4 0 1 0-8 0M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2",reloj:"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 7v5l3 3",mic:"M9 5a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0zM5 10a7 7 0 0 0 14 0M8 21h8M12 17v4",camara:"M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M9 13a3 3 0 1 0 6 0a3 3 0 1 0-6 0",nota:"M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4M13.5 6.5l4 4",llave:"M15 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0M10.5 13.5L3 21M5 19l2 2M7 17l2 2"};
+cliente:"M8 7a4 4 0 1 0 8 0a4 4 0 1 0-8 0M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2",reloj:"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 7v5l3 3",subir:"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12",mic:"M9 5a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0zM5 10a7 7 0 0 0 14 0M8 21h8M12 17v4",camara:"M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2M9 13a3 3 0 1 0 6 0a3 3 0 1 0-6 0",nota:"M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4M13.5 6.5l4 4",llave:"M15 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0M10.5 13.5L3 21M5 19l2 2M7 17l2 2"};
 const ico=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CAT_G=['Obra y construcción','Alimentación','Vivienda','Servicios públicos','Transporte','Vehículo','Salud','Educación','Familia','Ropa y personal','Ocio y salidas','Créditos y deudas','Impuestos','Seguros','Otros gastos'];
 const CAT_I=['Honorarios','Utilidades de empresas','Salario','Arriendos','Reembolsos','Otros ingresos'];
@@ -298,6 +298,10 @@ function vMas(){
   <button class="tarjeta fila" data-act="gcfg"><div><div class="t-nom">${gid()?'Cambiar conexión con Google':'Conectar Google Calendar'}</div><div class="t-sub">${gid()?'ID de cliente guardado':'Pega aquí el ID de cliente de Google'}</div></div>${ico('llave')}</button>
   <button class="tarjeta fila" data-act="csvM"><div><div class="t-nom">Copiar movimientos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <button class="tarjeta fila" data-act="csvP"><div><div class="t-nom">Copiar contratos</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
+  <h2>Copia de seguridad</h2>
+  <p class="nota">Guarda todo (gastos, grupos, contratos, clientes, fotos y el baúl cifrado) en un archivo. Sirve para pasar tus datos de Safari a la app del ícono, o a otro celular.</p>
+  <div class="mosaico"><button class="tile claro" data-act="backup">${ico('doc')}Guardar copia</button><label class="tile claro">${ico('subir')}Restaurar copia<input type="file" accept=".json,application/json" class="restIn" hidden></label></div>
+  <h2>Excel</h2>
   <button class="tarjeta fila" data-act="csvC"><div><div class="t-nom">Copiar posibles clientes</div><div class="t-sub">Para pegar en Excel</div></div>${ico('doc')}</button>
   <p class="nota">${coll?'Tus datos se guardan en tu cuenta de Claude y los ves igual en el celular y el computador.':'Tus datos se guardan en este navegador. Para tenerlos en el celular y el computador a la vez, abre la versión de Claude.'}</p>`}
 
@@ -455,6 +459,7 @@ const onAct=e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.da
   if(a==='winC'){const c=items.get(b.dataset.id);if(c){const cc={...c,estado:'Aceptó',cerrada:today()};put(cc);if(cc.recs?.length)borrarRecs(cc,true);
     openForm('proy',null,null,{nombre:(c.que||c.cliente).slice(0,140),objeto:c.que,cliente:c.cliente,empresa:c.empresa,valor:c.valor||0,ant:c.ant||'',estado:'Adjudicado',prob:90,notas:c.notas});
     toast('¡Bien! Completa los datos del contrato')}}
+  if(a==='backup')hacerCopia();
   if(a==='csvC')copyCsv([['Cliente','Teléfono','Qué se cotizó','Valor cotizado','Anticipo %','Anticipo','Empresa','Enviada','Estado','Días pensando','Último contacto','Notas'],...all('cli').map(c=>[c.cliente,c.tel,c.que,c.valor,c.ant||'',antV(c)||'',c.empresa,c.enviada,c.estado,dias(c.enviada,ABIERTA.includes(c.estado)?null:c.cerrada),c.ultimo,c.notas])],'Posibles clientes');
   if(a==='editM')openForm('mov',items.get(b.dataset.id));if(a==='editP')openForm('proy',items.get(b.dataset.id));if(a==='go')location.hash=b.dataset.v;
   if(a==='csvM'){const pn=id=>(items.get(id)||{}).nombre||'';copyCsv([['Fecha','Tipo','Categoría','Descripción','Medio de pago','Grupo','Proyecto','Monto'],...all('mov').sort((x,y)=>x.fecha.localeCompare(y.fecha)).map(m=>[m.fecha,m.tipo,m.categoria,m.descripcion,m.metodo,pn(m.grupo),pn(m.proyecto),m.monto])],'Movimientos')}
@@ -462,7 +467,26 @@ const onAct=e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.da
 $('#main').addEventListener('click',onAct);$('#gMain').addEventListener('click',onAct);
 $('#hAcc').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;cur=new Date(cur.getFullYear(),cur.getMonth()+(b.dataset.act==='mPrev'?-1:1),1);render()});
 $('#main').addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('#movList').innerHTML=listaMovs(mes().movs)}});
-$('#main').addEventListener('change',e=>{if(e.target.classList.contains('fotoIn')){const f=e.target.files[0];e.target.value='';if(f)leerFactura(f);return}if(e.target.id==='fEst'){fEst=e.target.value;render()}if(e.target.id==='fCli'){fCli=e.target.value;render()}});
+$('#main').addEventListener('change',e=>{if(e.target.classList.contains('restIn')){const f=e.target.files[0];e.target.value='';if(f)restaurarCopia(f);return}if(e.target.classList.contains('fotoIn')){const f=e.target.files[0];e.target.value='';if(f)leerFactura(f);return}if(e.target.id==='fEst'){fEst=e.target.value;render()}if(e.target.id==='fCli'){fCli=e.target.value;render()}});
+
+/* ---------- Copia de seguridad: todo en un archivo .json ---------- */
+const blobB64=b=>new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.readAsDataURL(b)});
+async function todasFotos(){try{const d=await idb();return await new Promise(ok=>{const st=d.transaction('f').objectStore('f'),out=[];const c=st.openCursor();c.onsuccess=()=>{const x=c.result;if(x){out.push([x.key,x.value]);x.continue()}else ok(out)};c.onerror=()=>ok(out)})}catch(e){return []}}
+async function hacerCopia(){toast('Preparando la copia…');
+  const fotos={};for(const [k,b] of await todasFotos())fotos[k]=await blobB64(b);
+  const datos={app:'mis-finanzas',version:1,fecha:new Date().toISOString(),items:[...items.values()],fotos};
+  const nombre='mis-finanzas-'+today()+'.json',file=new File([JSON.stringify(datos)],nombre,{type:'application/json'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:nombre});toast('Copia lista: guárdala en Archivos o envíatela');return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=nombre;document.body.append(a);a.click();a.remove();toast('Copia descargada: '+nombre)}
+async function restaurarCopia(f){let d;try{d=JSON.parse(await f.text())}catch(e){return toast('Ese archivo no es una copia de la app')}
+  if(!d||d.app!=='mis-finanzas'||!Array.isArray(d.items))return toast('Ese archivo no es una copia de la app');
+  const nI=d.items.length,nF=Object.keys(d.fotos||{}).length;
+  if(items.get('vault')&&d.items.some(x=>x.id==='vault')&&!window.__confirmaBaul){window.__confirmaBaul=f;toast('Ya hay un baúl aquí y se reemplazará por el de la copia. Vuelve a elegir el archivo para confirmar');return}
+  window.__confirmaBaul=null;toast('Restaurando…');
+  for(const [k,b64] of Object.entries(d.fotos||{})){try{const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);await fotoPut(k,new Blob([u]))}catch(e){}}
+  for(const x of d.items){if(x&&x.id)items.set(x.id,x)}
+  if(coll){for(const x of d.items){try{await coll.doc(x.id).set(x)}catch(e){}}}else saveLocal();
+  render();toast('Listo: '+nI+' registros y '+nF+' fotos restaurados')}
 
 /* ---------- Grupos de gastos y fotos ---------- */
 let grupoAbierto=null,ff={keep:[],nuevos:[],quitar:[]},fotoLeer=k=>fotoGet(k);
